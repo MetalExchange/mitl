@@ -79,15 +79,27 @@ _getSms() async {
     msg.address = msg.address!.toLowerCase();
 
     if (msg.address!.contains('cc')) {
-    } else if (msg.address!.contains('shaizi')) {
+    }
+    else if (msg.address!.contains('shaizi')) {
       if (_shaizilocalSmsChecker(msg.body)) {
         shaiziMessageParsing tryMessage = new shaiziMessageParsing(msg.body!);
+
+        //get existing times data for a metal
+        //for example Aluminium here
+        List<Map<String,dynamic>> metals = await tryMessage.getMessagesPull('Al');
+
+        //push metal prices, for example aluminium here
+        bool output = tryMessage.pushPrices('Al');
+        if(!output){
+          print("Error occured in push");
+        }
+
       }
     }
   }
 }
 
-// messgae checker
+// message checker
 bool _shaizilocalSmsChecker(String? message) {
   int msgScore = 0;
 

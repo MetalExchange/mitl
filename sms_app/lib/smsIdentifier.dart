@@ -1,5 +1,7 @@
 import 'package:sms_app/main.dart';
 import 'package:validators/validators.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class shaiziMessageParsing {
   List<String> messageArray = [];
@@ -17,6 +19,8 @@ class shaiziMessageParsing {
   late int niStart;
   late int pbStart;
   late int snStart;
+
+  final _firestore = Firestore.instance ;
 
   List<int> finalPriceList = [
     -1,
@@ -58,7 +62,38 @@ class shaiziMessageParsing {
     messageArray = messageFormatter(newMessage, messageArray);
     initialVariablesetter();
     priceSetter();
+  //  We now have message information
+
   }
+
+  Future<List< Map<String,dynamic> >> getMessagesPull(String metal) async{
+    final messages = await _firestore.collection('metals'+metal+'times').getDocuments(); // gets a Future<DocumentSnapshot>
+    List<Map<String,dynamic>> output = []
+    for( var message in messages.documents){
+      print(message.data);
+      output.add(message.data);
+    }
+    return output ;
+  }
+
+  bool pushPrices(String metal){
+    try{
+      _firestore.collection('metals/'+metal+'/times').add({
+        'LME' : , // fill suitable values here
+        'MEX' : ,
+        'Region1': ,
+        'Region2': ,
+        'Region3': ,
+        'Region4': ,
+        'time' : ,
+      });
+      return true;
+    }
+    catch(e){ //error occured in pushing
+      return false;
+    }
+  }
+
 //--------------------------------------------------------
 
   void priceSetter() {
